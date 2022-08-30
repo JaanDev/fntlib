@@ -1,4 +1,0 @@
-[project]
-name = "fntlib"
-authors = [{name = "Jaan", email = ""}]
-dynamic = ["version", "description"]
