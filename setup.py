@@ -26,5 +26,6 @@ setup(
     test_suite='tests',
     cmdclass={
         'pytest': PyTest,
-    }
+    },
+    long_description='''Ok test desc here'''
 )
