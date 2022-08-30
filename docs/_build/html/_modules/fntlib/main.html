@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fntlib.main &mdash; fntlib  documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> fntlib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fntlib.html">fntlib package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">fntlib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>fntlib.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fntlib.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">IO</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">fntlib.utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="Padding"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Padding">[docs]</a><span class="k">class</span> <span class="nc">Padding</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Padding describes how textures are displaced in the texture.&quot;&quot;&quot;</span>
+    
+    <span class="n">up</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">down</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">left</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;(?P&lt;up&gt;.+?),(?P&lt;right&gt;.+?),(?P&lt;down&gt;.+?),(?P&lt;left&gt;.+?)&quot;</span><span class="p">,</span>
+                <span class="n">args</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Padding.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Padding.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">down</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="si">}</span><span class="s1">&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Spacing"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Spacing">[docs]</a><span class="k">class</span> <span class="nc">Spacing</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Spacing describes how letters are displaced relative each other.&quot;&quot;&quot;</span>
+    
+    <span class="n">horizontal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">vertical</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;(?P&lt;horizontal&gt;.+?),(?P&lt;vertical&gt;.+?)&quot;</span><span class="p">,</span>
+                <span class="n">args</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Spacing.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Spacing.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">horizontal</span><span class="si">}</span><span class="s1">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vertical</span><span class="si">}</span><span class="s1">&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Info"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Info">[docs]</a><span class="k">class</span> <span class="nc">Info</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class contains information on how the font was generated.</span>
+<span class="sd">    </span>
+<span class="sd">    :param face: The name of the true type font.</span>
+<span class="sd">    :type face: str</span>
+<span class="sd">    :param size: The size of the true type font.</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :param bold: Whether the font is bold.</span>
+<span class="sd">    :type bold: bool</span>
+<span class="sd">    :param italic: Whether the font is italic.</span>
+<span class="sd">    :type italic: bool</span>
+<span class="sd">    :param charset: The name of the OEM charset used (when not unicode).</span>
+<span class="sd">    :type charset: str</span>
+<span class="sd">    :param unicode: Whether charset is unicode.</span>
+<span class="sd">    :type unicode: bool</span>
+<span class="sd">    :param stretch_h: The font height stretch in percentage. 100% means no stretch.</span>
+<span class="sd">    :type stretch_h: int</span>
+<span class="sd">    :param smooth: Whether the smoothing was turned on.</span>
+<span class="sd">    :type smooth: bool</span>
+<span class="sd">    :param aa: The supersampling level used. 1 means no supersampling was used.</span>
+<span class="sd">    :type aa: int</span>
+<span class="sd">    :param padding: The padding for each character.</span>
+<span class="sd">    :type padding: Padding</span>
+<span class="sd">    :param spacing: The spacing for each character.</span>
+<span class="sd">    :type spacing: Spacing</span>
+<span class="sd">    :param outline: The outline thickness.</span>
+<span class="sd">    :type outline: int&quot;&quot;&quot;</span>
+
+    <span class="n">face</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">StrValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The name of the true type font.&quot;&quot;&quot;</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The size of the true type font.&quot;&quot;&quot;</span>
+    <span class="n">bold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;Whether the font is bold.&quot;&quot;&quot;</span>
+    <span class="n">italic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;Whether the font is italic.&quot;&quot;&quot;</span>
+    <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">StrValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The name of the OEM charset used (when not unicode).&quot;&quot;&quot;</span>
+    <span class="n">unicode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;Whether charset is unicode.&quot;&quot;&quot;</span>
+    <span class="n">stretch_h</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The font height stretch in percentage. 100% means no stretch.&quot;&quot;&quot;</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;Whether the smoothing was turned on.&quot;&quot;&quot;</span>
+    <span class="n">aa</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The supersampling level used. 1 means no supersampling was used.&quot;&quot;&quot;</span>
+    <span class="n">padding</span><span class="p">:</span> <span class="n">Padding</span> <span class="o">=</span> <span class="n">Padding</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The padding for each character.&quot;&quot;&quot;</span>
+    <span class="n">spacing</span><span class="p">:</span> <span class="n">Spacing</span> <span class="o">=</span> <span class="n">Spacing</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The spacing for each character.&quot;&quot;&quot;</span>
+    <span class="n">outline</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The outline thickness.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Info.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Info.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">({</span><span class="s1">&#39;stretch_h&#39;</span><span class="p">:</span> <span class="s1">&#39;stretchH&#39;</span><span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="ChannelInfo"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.ChannelInfo">[docs]</a><span class="k">class</span> <span class="nc">ChannelInfo</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The enum to represent what information holds a texture channel.&quot;&quot;&quot;</span>
+    
+    <span class="n">GLYPH_DATA</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">OUTLINE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">GLYPH_AND_OUTLINE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">ZERO</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">ONE</span> <span class="o">=</span> <span class="mi">4</span></div>
+
+
+<div class="viewcode-block" id="Common"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Common">[docs]</a><span class="k">class</span> <span class="nc">Common</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class contains information common to all characters.</span>
+<span class="sd">    </span>
+<span class="sd">    :param line_height: The distance in pixels between each line of text.</span>
+<span class="sd">    :type line_height: int</span>
+<span class="sd">    :param base: The number of pixels from the absolute top of the line to the base of the characters.</span>
+<span class="sd">    :type base: int</span>
+<span class="sd">    :param scale_w: The width of the texture, normally used to scale the x pos of the character image.</span>
+<span class="sd">    :type scale_w: int</span>
+<span class="sd">    :param scale_h: The height of the texture, normally used to scale the y pos of the character image.</span>
+<span class="sd">    :type scale_h: int</span>
+<span class="sd">    :param pages_num: The number of texture pages included in the font.</span>
+<span class="sd">    :type pages_num: int</span>
+<span class="sd">    :param packed: Whether the monochrome characters have been packed into each of the texture channels. In this case alphaChnl describes what is stored in each channel.</span>
+<span class="sd">    :type packed: bool</span>
+<span class="sd">    :param alpha_channel: Check enum `ChannelInfo`</span>
+<span class="sd">    :type alpha_channel: ChannelInfo</span>
+<span class="sd">    :param red_channel: Check enum `ChannelInfo`</span>
+<span class="sd">    :type red_channel: ChannelInfo</span>
+<span class="sd">    :param green_channel: Check enum `ChannelInfo`</span>
+<span class="sd">    :type green_channel: ChannelInfo</span>
+<span class="sd">    :param blue_channel: Check enum `ChannelInfo`</span>
+<span class="sd">    :type blue_channel: ChannelInfo&quot;&quot;&quot;</span>
+
+    <span class="n">line_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The distance in pixels between each line of text.&quot;&quot;&quot;</span>
+    <span class="n">base</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The number of pixels from the absolute top of the line to the base of the characters.&quot;&quot;&quot;</span>
+    <span class="n">scale_w</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The width of the texture, normally used to scale the x pos of the character image.&quot;&quot;&quot;</span>
+    <span class="n">scale_h</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The height of the texture, normally used to scale the y pos of the character image.&quot;&quot;&quot;</span>
+    <span class="n">pages_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The number of texture pages included in the font.&quot;&quot;&quot;</span>
+    <span class="n">packed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;Whether the monochrome characters have been packed into each of the texture channels. In this case alphaChnl describes what is stored in each channel.&quot;&quot;&quot;</span>
+    <span class="n">alpha_channel</span><span class="p">:</span> <span class="n">ChannelInfo</span> <span class="o">=</span> <span class="n">EnumValue</span><span class="p">(</span><span class="n">enum</span><span class="o">=</span><span class="n">ChannelInfo</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Check enum `ChannelInfo`&quot;&quot;&quot;</span>
+    <span class="n">red_channel</span><span class="p">:</span> <span class="n">ChannelInfo</span> <span class="o">=</span> <span class="n">EnumValue</span><span class="p">(</span><span class="n">enum</span><span class="o">=</span><span class="n">ChannelInfo</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Check enum `ChannelInfo`&quot;&quot;&quot;</span>
+    <span class="n">green_channel</span><span class="p">:</span> <span class="n">ChannelInfo</span> <span class="o">=</span> <span class="n">EnumValue</span><span class="p">(</span><span class="n">enum</span><span class="o">=</span><span class="n">ChannelInfo</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Check enum `ChannelInfo`&quot;&quot;&quot;</span>
+    <span class="n">blue_channel</span><span class="p">:</span> <span class="n">ChannelInfo</span> <span class="o">=</span> <span class="n">EnumValue</span><span class="p">(</span><span class="n">enum</span><span class="o">=</span><span class="n">ChannelInfo</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Check enum `ChannelInfo`&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Common.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Common.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">({</span><span class="s1">&#39;line_height&#39;</span><span class="p">:</span> <span class="s1">&#39;lineHeight&#39;</span><span class="p">,</span> <span class="s1">&#39;scale_w&#39;</span><span class="p">:</span> <span class="s1">&#39;scaleW&#39;</span><span class="p">,</span> <span class="s1">&#39;scale_h&#39;</span><span class="p">:</span> <span class="s1">&#39;scaleH&#39;</span><span class="p">,</span> <span class="s1">&#39;pages_num&#39;</span><span class="p">:</span> <span class="s1">&#39;pages&#39;</span><span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Page">[docs]</a><span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents a page associated with a texture.&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The page id.&quot;&quot;&quot;</span>
+    <span class="n">tex_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">StrValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The texture file name.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Page.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Page.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">({</span><span class="s1">&#39;tex_name&#39;</span><span class="p">:</span> <span class="s1">&#39;file&#39;</span><span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The texture channel where the character image is found.&quot;&quot;&quot;</span>
+    
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">ALPHA</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">ALL</span> <span class="o">=</span> <span class="mi">15</span></div>
+
+
+<div class="viewcode-block" id="Char"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Char">[docs]</a><span class="k">class</span> <span class="nc">Char</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class describes a character in the font.</span>
+<span class="sd">    </span>
+<span class="sd">    :param id: The character id.</span>
+<span class="sd">    :type id: int</span>
+<span class="sd">    :param x: The left position of the character image in the texture.</span>
+<span class="sd">    :type x: int</span>
+<span class="sd">    :param y: The top position of the character image in the texture.</span>
+<span class="sd">    :type y: int</span>
+<span class="sd">    :param width: The width of the character image in the texture.</span>
+<span class="sd">    :type width: int</span>
+<span class="sd">    :param height: The height of the character image in the texture.</span>
+<span class="sd">    :type height: int</span>
+<span class="sd">    :param xoffset: How much the current position should be offset when copying the image from the texture to the screen.</span>
+<span class="sd">    :type xoffset: int</span>
+<span class="sd">    :param yoffset: How much the current position should be offset when copying the image from the texture to the screen.</span>
+<span class="sd">    :type yoffset: int</span>
+<span class="sd">    :param xadvance: How much the current position should be advanced after drawing the character.</span>
+<span class="sd">    :type xadvance: int</span>
+<span class="sd">    :param page: The texture page where the character image is found.</span>
+<span class="sd">    :type page: int</span>
+<span class="sd">    :param chnl: The texture channel where the character image is found.</span>
+<span class="sd">    :type chnl: Channel&quot;&quot;&quot;</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The character id.&quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The left position of the character image in the texture.&quot;&quot;&quot;</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The top position of the character image in the texture.&quot;&quot;&quot;</span>
+    <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The width of the character image in the texture.&quot;&quot;&quot;</span>
+    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The height of the character image in the texture.&quot;&quot;&quot;</span>
+    <span class="n">xoffset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;How much the current position should be offset when copying the image from the texture to the screen.&quot;&quot;&quot;</span>
+    <span class="n">yoffset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;How much the current position should be offset when copying the image from the texture to the screen.&quot;&quot;&quot;</span>
+    <span class="n">xadvance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;How much the current position should be advanced after drawing the character.&quot;&quot;&quot;</span>
+    <span class="n">page</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The texture page where the character image is found.&quot;&quot;&quot;</span>
+    <span class="n">chnl</span><span class="p">:</span> <span class="n">Channel</span> <span class="o">=</span> <span class="n">EnumValue</span><span class="p">(</span><span class="n">enum</span><span class="o">=</span><span class="n">Channel</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;The texture channel where the character image is found.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Kerning"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Kerning">[docs]</a><span class="k">class</span> <span class="nc">Kerning</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The kerning information is used to adjust the distance between certain characters, e.g. some characters should be placed closer to each other than others.</span>
+<span class="sd">    </span>
+<span class="sd">    :param first_id: The first character id.</span>
+<span class="sd">    :type first_id: int</span>
+<span class="sd">    :param second_id: The second character id.</span>
+<span class="sd">    :type second_id: int</span>
+<span class="sd">    :param amount: How much the x position should be adjusted when drawing the second character immediately following the first.</span>
+<span class="sd">    :type amount: int&quot;&quot;&quot;</span>
+
+    <span class="n">first_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The first character id.&quot;&quot;&quot;</span>
+    <span class="n">second_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;The second character id.&quot;&quot;&quot;</span>
+    <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">IntValue</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;How much the x position should be adjusted when drawing the second character immediately following the first.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Kerning.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.Kerning.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_string</span><span class="p">({</span><span class="s1">&#39;first_id&#39;</span><span class="p">:</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;second_id&#39;</span><span class="p">:</span> <span class="s1">&#39;second&#39;</span><span class="p">})</span></div></div>
+
+
+<div class="viewcode-block" id="FNT"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.FNT">[docs]</a><span class="k">class</span> <span class="nc">FNT</span><span class="p">(</span><span class="n">DefaultClass</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The main class that represents the .fnt file structure.</span>
+<span class="sd">    </span>
+<span class="sd">    :param info: This variable represents the `info` section in the font.</span>
+<span class="sd">    :type info: Info</span>
+<span class="sd">    :param common: This variable represents the `common` section in the font.</span>
+<span class="sd">    :type common: Common</span>
+<span class="sd">    :param pages: This variable represents pages in the font.</span>
+<span class="sd">    :type pages: list[Page]</span>
+<span class="sd">    :param chars: This variable represents characters in the font.</span>
+<span class="sd">    :type chars: list[Char]</span>
+<span class="sd">    :param kernings: This variable represents kernings in the font.</span>
+<span class="sd">    :type kernings: list[Kerning]&quot;&quot;&quot;</span>
+
+    <span class="n">info</span><span class="p">:</span> <span class="n">Info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;This variable represents the `info` section in the font.&quot;&quot;&quot;</span>
+    <span class="n">common</span><span class="p">:</span> <span class="n">Common</span> <span class="o">=</span> <span class="n">Common</span><span class="p">()</span>
+    <span class="sd">&quot;&quot;&quot;This variable represents the `common` section in the font.&quot;&quot;&quot;</span>
+    <span class="n">pages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Page</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="sd">&quot;&quot;&quot;This variable represents pages in the font.&quot;&quot;&quot;</span>
+    <span class="n">chars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Char</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="sd">&quot;&quot;&quot;This variable represents characters in the font.&quot;&quot;&quot;</span>
+    <span class="n">kernings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Kerning</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="sd">&quot;&quot;&quot;This variable represents kernings in the font.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param fp: An opened readable bytes file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">Common</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernings</span> <span class="o">=</span> <span class="p">[]</span>
+        
+<div class="viewcode-block" id="FNT.from_fp"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.FNT.from_fp">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_fp</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fp</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FNT</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        
+        <span class="n">obj</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="FNT.setup"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.FNT.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fp</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]:</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">get_pairs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s2">&quot;stretchH&quot;</span><span class="p">,</span> <span class="s2">&quot;stretch_h&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;common&quot;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">get_pairs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;lineHeight&#39;</span><span class="p">,</span> <span class="s1">&#39;line_height&#39;</span><span class="p">)</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;scaleW&#39;</span><span class="p">,</span> <span class="s1">&#39;scale_w&#39;</span><span class="p">)</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;scaleH&#39;</span><span class="p">,</span> <span class="s1">&#39;scale_h&#39;</span><span class="p">)</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;pages&#39;</span><span class="p">,</span> <span class="s1">&#39;pages_num&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="o">=</span> <span class="n">Common</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;page&quot;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">get_pairs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;tex_name&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Page</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;char &quot;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">get_pairs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Char</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;kerning &quot;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">get_pairs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;first_id&#39;</span><span class="p">)</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">replace_dict_key</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">,</span> <span class="s1">&#39;second_id&#39;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">kernings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Kerning</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;FNT info=</span><span class="si">{</span><span class="s2">&quot;None&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="k">else</span> <span class="s2">&quot;&lt;Info ...&gt;&quot;</span><span class="si">}</span><span class="s1"> common=</span><span class="si">{</span><span class="s2">&quot;None&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">common</span> <span class="k">else</span> <span class="s2">&quot;&lt;Common ...&gt;&quot;</span><span class="si">}</span><span class="s1"> &#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;pages=</span><span class="si">{</span><span class="s2">&quot;[]&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span> <span class="k">else</span> <span class="s2">&quot;[...]&quot;</span><span class="si">}</span><span class="s1"> chars=</span><span class="si">{</span><span class="s2">&quot;[]&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span> <span class="k">else</span> <span class="s2">&quot;[...]&quot;</span><span class="si">}</span><span class="s1"> kernings=</span><span class="si">{</span><span class="s2">&quot;[]&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span> <span class="k">else</span> <span class="s2">&quot;[...]&quot;</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+
+<div class="viewcode-block" id="FNT.to_string"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.FNT.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;info </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">common </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;page </span><span class="si">{</span><span class="n">page</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;chars count=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+            <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;char </span><span class="si">{</span><span class="n">char</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernings</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;kernings count=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernings</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernings</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;kerning </span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="k">return</span> <span class="n">ret</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FNT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a fnt file into an object.</span>
+<span class="sd">    </span>
+<span class="sd">    :param fp: An opened bytes-like file.</span>
+<span class="sd">    :type fp: IO[bytes]</span>
+<span class="sd">    </span>
+<span class="sd">    :returns: An object that represents the font.</span>
+<span class="sd">    :rtype: FNT</span>
+<span class="sd">    </span>
+<span class="sd">    :raises AttributeError: if `fp` is not readable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fp</span><span class="o">.</span><span class="n">readable</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Specified &quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&quot; is not readable.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FNT</span><span class="o">.</span><span class="n">from_fp</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="loads"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.loads">[docs]</a><span class="k">def</span> <span class="nf">loads</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FNT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a fnt file from bytes string into an object.</span>
+<span class="sd">    </span>
+<span class="sd">    :param value: A bytes string containing a fnt file.</span>
+<span class="sd">    :type value: bytes</span>
+<span class="sd">    </span>
+<span class="sd">    :returns: An object that represents the font.</span>
+<span class="sd">    :rtype: FNT</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="dump"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.dump">[docs]</a><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">FNT</span><span class="p">,</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write an `FNT` object into a file.</span>
+<span class="sd">    </span>
+<span class="sd">    :param value: An `FNT` object to write.</span>
+<span class="sd">    :type value: FNT</span>
+<span class="sd">    :param fp: An opened bytes-like file.</span>
+<span class="sd">    :type fp: IO[bytes]</span>
+<span class="sd">    </span>
+<span class="sd">    :raises AttributeError: if `fp` is not writable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fp</span><span class="o">.</span><span class="n">writable</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Specified &quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&quot; is not writable.&#39;</span><span class="p">)</span>
+
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="dumps"><a class="viewcode-back" href="../../fntlib.html#fntlib.main.dumps">[docs]</a><span class="k">def</span> <span class="nf">dumps</span><span class="p">(</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">FNT</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write an `FNT` object to a string in fnt format.</span>
+<span class="sd">    </span>
+<span class="sd">    :param value: An object to write.</span>
+<span class="sd">    :type value: FNT</span>
+<span class="sd">    </span>
+<span class="sd">    :returns: a bytes .fnt representation of the python object</span>
+<span class="sd">    :rtype: bytes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    
+    <span class="n">dump</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">fp</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, jaan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
