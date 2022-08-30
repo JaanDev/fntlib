@@ -1,5 +1,5 @@
-LICENSE
-README.md
+LICENSE.rst
+README.rst
 setup.cfg
 setup.py
 fntlib/__init__.py
