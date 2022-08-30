@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.cfg
+setup.py
+fntlib/__init__.py
+fntlib/main.py
+fntlib/utils.py
+fntlib.egg-info/PKG-INFO
+fntlib.egg-info/SOURCES.txt
+fntlib.egg-info/dependency_links.txt
+fntlib.egg-info/top_level.txt

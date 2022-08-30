@@ -18,7 +18,7 @@ setup(
     description='A Python library to work with bitmap .fnt font files.',
     author='Jaan',
     license='MIT',
-    url='insert_later',
+    url='https://github.com/JaanDev/fntlib',
     keywords='python library font fnt bitmap fonts interaction',
     install_requires=[],
     setup_requires=['pytest-runner'],
